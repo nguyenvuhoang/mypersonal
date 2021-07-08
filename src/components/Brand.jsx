@@ -31,28 +31,34 @@ export default function SimpleSlider() {
     <ul>
       <Slider {...settings}>
         <li className="item">
-          <img src="assets/img/partners/1.png" alt="partners brand" />
+          <img src="assets/img/partners/brand-01.png" alt="partners brand" />
         </li>
         <li className="item">
-          <img src="assets/img/partners/2.png" alt="partners brand" />
+          <img src="assets/img/partners/brand-02.png" alt="partners brand" />
         </li>
         <li className="item">
-          <img src="assets/img/partners/3.png" alt="partners brand" />
+          <img src="assets/img/partners/brand-03.png" alt="partners brand" />
         </li>
         <li className="item">
-          <img src="assets/img/partners/4.png" alt="partners brand" />
+          <img src="assets/img/partners/brand-04.png" alt="partners brand" />
         </li>
         <li className="item">
-          <img src="assets/img/partners/5.png" alt="partners brand" />
+          <img src="assets/img/partners/brand-05.png" alt="partners brand" />
         </li>
         <li className="item">
-          <img src="assets/img/partners/6.png" alt="partners brand" />
+          <img src="assets/img/partners/brand-06.png" alt="partners brand" />
         </li>
         <li className="item">
-          <img src="assets/img/partners/7.png" alt="partners brand" />
+          <img src="assets/img/partners/brand-07.png" alt="partners brand" />
         </li>
         <li className="item">
-          <img src="assets/img/partners/8.png" alt="partners brand" />
+          <img src="assets/img/partners/brand-08.png" alt="partners brand" />
+        </li>
+        <li className="item">
+          <img src="assets/img/partners/brand-09.png" alt="partners brand" />
+        </li>
+        <li className="item">
+          <img src="assets/img/partners/brand-10.png" alt="partners brand" />
         </li>
       </Slider>
     </ul>
