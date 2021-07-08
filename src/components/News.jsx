@@ -97,10 +97,212 @@ const News = () => {
   /src/setupTests.js.js
   `;
 
+  const reduxLoginString = `
+  store.dispatch({ type: 'SHOW_NOTIFICATION', text: 'You logged in.' })
+  setTimeout(() => {
+    store.dispatch({ type: 'HIDE_NOTIFICATION' })
+  }, 5000)
+  `;
+
+  const connectedComponentString = `
+  this.props.dispatch({ type: 'SHOW_NOTIFICATION', text: 'You logged in.' })
+  setTimeout(() => {
+    this.props.dispatch({ type: 'HIDE_NOTIFICATION' })
+  }, 5000)
+  `;
+
+  const dispatchObjectString =`
+  // actions.js
+  export function showNotification(text) {
+    return { type: 'SHOW_NOTIFICATION', text }
+  }
+  export function hideNotification() {
+    return { type: 'HIDE_NOTIFICATION' }
+  }
+  // component.js
+  import { showNotification, hideNotification } from '../actions'
+  this.props.dispatch(showNotification('You just logged in.'))
+  setTimeout(() => {
+    this.props.dispatch(hideNotification())
+  }, 5000)
+  `;
+
+  const connectString =`
+  this.props.showNotification('You just logged in.')
+  setTimeout(() => {
+    this.props.hideNotification()
+  }, 5000)
+  `;
+
+  const logicTimeOutString =`
+  // actions.js
+  function showNotification(id, text) {
+    return { type: 'SHOW_NOTIFICATION', id, text }
+  }
+  function hideNotification(id) {
+    return { type: 'HIDE_NOTIFICATION', id }
+  }
+  let nextNotificationId = 0
+  export function showNotificationWithTimeout(dispatch, text) {
+    // Base on ID to identify Hide or Display
+    const id = nextNotificationId++
+    dispatch(showNotification(id, text))
+    setTimeout(() => {
+      dispatch(hideNotification(id))
+    }, 5000)
+  }
+  `;
+
+  const noticationWithTimeOutString =`
+  // component.js
+  showNotificationWithTimeout(this.props.dispatch, 'You just logged in.')
+  // otherComponent.js
+  showNotificationWithTimeout(this.props.dispatch, 'You just logged out.')
+  `;
+
+  const singleTonString = `
+  // store.js
+  export default createStore(reducer)
+  // actions.js
+  import store from './store'
+  // ...
+  let nextNotificationId = 0
+  export function showNotificationWithTimeout(text) {
+    const id = nextNotificationId++
+    store.dispatch(showNotification(id, text))
+    setTimeout(() => {
+      store.dispatch(hideNotification(id))
+    }, 5000)
+  }
+  // component.js
+  showNotificationWithTimeout('You just logged in.')
+  // otherComponent.js
+  showNotificationWithTimeout('You just logged out.')
+  `;
+
+
+  const clientSideString =`
+  // actions.js
+  // ...
+  let nextNotificationId = 0
+  export function showNotificationWithTimeout(dispatch, text) {
+    const id = nextNotificationId++
+    dispatch(showNotification(id, text))
+    setTimeout(() => {
+      dispatch(hideNotification(id))
+    }, 5000)
+  }
+  // component.js
+  showNotificationWithTimeout(this.props.dispatch, 'You just logged in.')
+  // otherComponent.js
+  showNotificationWithTimeout(this.props.dispatch, 'You just logged out.')
+  `;
+
+  const reduxThunkActionString =`
+  import { createStore, applyMiddleware } from 'redux'
+  import thunk from 'redux-thunk'
+  const store = createStore(
+    reducer,
+    applyMiddleware(thunk)
+  )
+  // It still recognizes plain object actions
+  store.dispatch({ type: 'INCREMENT' })
+  // But with thunk middleware, it is also aware of functions
+  store.dispatch(function (dispatch) {
+    // ... can dispatch many times inside
+    dispatch({ type: 'INCREMENT' })
+    dispatch({ type: 'INCREMENT' })
+    dispatch({ type: 'INCREMENT' })
+    setTimeout(() => {
+      // ... even asynchronous!
+      dispatch({ type: 'DECREMENT' })
+    }, 1000)
+  })
+  `;
+
+  const actionCreatorString =`
+  // actions.js
+  function showNotification(id, text) {
+    return { type: 'SHOW_NOTIFICATION', id, text }
+  }
+  function hideNotification(id) {
+    return { type: 'HIDE_NOTIFICATION', id }
+  }
+  let nextNotificationId = 0
+  export function showNotificationWithTimeout(text) {
+    return function (dispatch) {
+      const id = nextNotificationId++
+      dispatch(showNotification(id, text))
+      setTimeout(() => {
+        dispatch(hideNotification(id))
+      }, 5000)
+    }
+  }
+  `;
+
+  const componentString =`
+  // component.js
+  showNotificationWithTimeout('You just logged in.')(this.props.dispatch)
+  `;
+
+  const loggerString =`
+  // component.js
+  this.props.dispatch(showNotificationWithTimeout('You just logged in.'))
+  `;
+
+  const connectDispatchString =`
+  // actions.js
+  function showNotification(id, text) {
+    return { type: 'SHOW_NOTIFICATION', id, text }
+  }
+  function hideNotification(id) {
+    return { type: 'HIDE_NOTIFICATION', id }
+  }
+  let nextNotificationId = 0
+  export function showNotificationWithTimeout(text) {
+    return function (dispatch) {
+      const id = nextNotificationId++
+      dispatch(showNotification(id, text))
+      setTimeout(() => {
+        dispatch(hideNotification(id))
+      }, 5000)
+    }
+  }
+  // component.js
+  import { connect } from 'react-redux'
+  // ...
+  this.props.showNotificationWithTimeout('You just logged in.')
+  // ...
+  export default connect(
+    mapStateToProps,
+    { showNotificationWithTimeout }
+  )(MyComponent)
+  `;
+
+  const getStateString =`
+  let nextNotificationId = 0
+  export function showNotificationWithTimeout(text) {
+    return function (dispatch, getState) {
+      // Redux doesn't care what you return in thunk
+      if (!getState().areNotificationsEnabled) {
+        return
+      }
+      const id = nextNotificationId++
+      dispatch(showNotification(id, text))
+      setTimeout(() => {
+        dispatch(hideNotification(id))
+      }, 5000)
+    }
+  }
+  `;
+
+  const promiseString =`
+  dispatch(someThunkReturningPromise()).then(...)
+  `;
+
+
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
-  const [isOpen3, setIsOpen3] = useState(false);
-  const [isOpen4, setIsOpen4] = useState(false);
 
   function toggleModalOne() {
     setIsOpen(!isOpen);
@@ -108,12 +310,7 @@ const News = () => {
   function toggleModalTwo() {
     setIsOpen2(!isOpen2);
   }
-  function toggleModalThree() {
-    setIsOpen3(!isOpen3);
-  }
-  function toggleModalFour() {
-    setIsOpen4(!isOpen4);
-  }
+  
 
   return (
     <>
@@ -151,7 +348,7 @@ const News = () => {
                 {/* END EXTRA */}
 
                 <h3 className="title" onClick={toggleModalOne}>
-                How to setup environment performance in React
+                Setup environment performance in React
                 </h3>
                 <div className="tokyo_tm_read_more">
                   <a onClick={toggleModalOne} href>
@@ -342,7 +539,7 @@ const News = () => {
                 <div
                   className="main"
                   style={{
-                    backgroundImage: "url(assets/img/news/2.jpg)",
+                    backgroundImage: "url(assets/img/news/2.png)",
                   }}
                 ></div>
               </div>
@@ -358,7 +555,7 @@ const News = () => {
                 {/* END EXTRA */}
 
                 <h3 className="title" onClick={toggleModalTwo}>
-                  Sony announced two new full frame cameras with zero fanfare
+                  Why should we use Redux Thunk Tutorial
                 </h3>
                 <div className="tokyo_tm_read_more">
                   <a onClick={toggleModalTwo} href>
@@ -388,7 +585,7 @@ const News = () => {
                         <div
                           className="main"
                           style={{
-                            backgroundImage: "url(assets/img/news/2.jpg)",
+                            backgroundImage: "url(assets/img/news/2.png)",
                           }}
                         ></div>
                       </div>
@@ -401,72 +598,111 @@ const News = () => {
                           </p>
                         </div>
                         <h3 className="title">
-                          Sony announced two new full frame cameras with zero
-                          fanfare
+                          Why should we use a middleware like Redux Thunk
                         </h3>
                       </div>
                       {/* END DETAILS */}
                       <div className="main_content ">
                         <div className="descriptions">
                           <p className="bigger">
-                            Just because we can't get out and about like we
-                            normally would, doesn’t mean we have to stop taking
-                            pictures. There’s still plenty you can do, provided
-                            you're prepared to use some imagination. Here are a
-                            few ideas to keep you shooting until normal life
-                            resumes.
+                          Have you ever wondered why you have to use a middleware like 
+                          <a href="https://github.com/reduxjs/redux-thunk" data-wpel-link="external" rel="external noopener noreferrer"> Redux Thunk </a>, 
+                          <a href="https://redux-saga.js.org/" data-wpel-link="external" rel="external noopener noreferrer"> Redux Saga </a>? 
+                          Or do you just use it because you see tutorials online telling you to use &#128540; and that's it.
                           </p>
-                          <p>
-                            Most photographers love to shoot the unusual, and
-                            you don’t get much more unusual than These
-                            Unprecedented Times. Right now everything counts as
-                            out of the ordinary. There are a number of
-                            remarkable things about these lockdown days that are
-                            worth photographing now so we can remember them when
-                            it is all over.
+                          <p className="bigger">
+                          Anyway, it's time for you to reconsider whether we really need a middleware or not, in this article I will analyze between writing pure no middleware and using <strong>Redux Thunk</strong>.
                           </p>
-                          <p>
-                            Streets empty that are usually busy are remarkable
-                            and can evoke the sense of historical pictures from
-                            before the invention of the motorcar. Other things
-                            that are different at the moment will be queues to
-                            get into stores and the lines marked out on the
-                            floor to show how far apart we should be.
-                          </p>
-                          <div className="quotebox">
-                            <div className="icon">
-                              <img
-                                className="svg"
-                                src="assets/img/svg/quote.svg"
-                                alt="quote"
-                              />
-                            </div>
-                            <p>
-                              Most photographers find it hard to see interesting
-                              pictures in places in which they are most
-                              familiar. A trip somewhere new seems always
-                              exactly what our photography needed, as shooting
-                              away from home consistently inspires us to new
-                              artistic heights.
-                            </p>
+
+                          <div className="content">
+                            <h4 className="heading4 pt--10 pb--20">1. Asynchronous Dispatch</h4>
+                            <p>For example, a user logs in to our website, after successful login, a toast message will be displayed, after 5 seconds, that message will automatically hide.</p>
+                            <p>This is the simplest way to do it in Redux</p>
+                            <SyntaxHighlighter language="jsx" style={dark} children={reduxLoginString}/>
+                            <p>Or like this inside connected component</p>
+                            <SyntaxHighlighter language="jsx" style={dark} children={connectedComponentString}/>
+                            <p>The only difference is that inside a connected component, usually you won't access the store directly, you'll get dispatch via prop (or hook for React Hooks). However, there is no significant difference.</p>
+                            <p>If you don't want to retype when <code>dispatch</code> with the same actions from different components, you can separate the action like this instead of having to <code>dispatch</code> an object</p>
+                            <SyntaxHighlighter language="jsx" style={dark} children={dispatchObjectString}/>
+                            <p>Or if you put actions inside <code>connect()</code> you would use it like this</p>
+                            <SyntaxHighlighter language="jsx" style={dark} children={connectString}/>
+                            <p>So far we haven't used any middleware or advanced concept.</p>
+                            
+                          </div> 
+
+                          <div className="content">
+                            <h4 className="heading4 pt--10 pb--20">2. Split into asynchronous action action</h4>
+                            <p>The above approach works well in simple cases, but you may find a few problems:</p>
+                            <ul>
+                              <li>It makes you rewrite this logic anywhere you want to show the message.</li>
+                              <li>Notifications without <strong>ID</strong> to distinguish each other, easily leading to the phenomenon of dispatch <code>HIDE_NOTIFICATION</code> 1 is that all existing messages on the screen are hidden earlier than expected.</li>
+                            </ul>
+                            <p>To solve these problems, we need to split into a function that only focuses on timeout logic and dispatching 2 actions. It might look like this:</p>
+                            
+                            <SyntaxHighlighter language="jsx" style={dark} children={logicTimeOutString}/>
+                            <p>Components can now use <code>showNotificationWithTimeout</code> without duplicating the above logic or facing the issue of hiding notifications:</p>
+                            <SyntaxHighlighter language="jsx" style={dark} children={noticationWithTimeOutString}/>
+                            <p>Why does <code>showNotificationWithTimeout()</code> have <code>dispatch</code> as the first argument? Because it needs to dispatch actions to the store. Normally a component does the <code>dispatch</code> but since we want an external function to do this, we need to pass <code>dispatch</code> in.</p>
+                            <p>If you have a singleton store exported from some module, you can import it and use <code>dispatch</code> directly like this</p>
+                            <SyntaxHighlighter language="jsx" style={dark} children={singleTonString}/>
+                            <p>This looks simpler, but we shouldn't. The main reason is because it forces the store to be a singleton. This makes it difficult to integrate into server rendering. On the server, you'll want each request to have its own store, so that different users receive a different preload data.</p>
+                            <p>A singleton is also harder to test.</p>
+                            <p>So we shouldn't do that, or you're sure in the future the app will be client-side only.</p>
+                            <p>Go back to previous version:</p>
+                            <SyntaxHighlighter language="jsx" style={dark} children={clientSideString}/>
+                            <p>This solved the problem with repeating logic and hiding notifications.</p>
+                            
+                          
                           </div>
-                          {/* END QUOTEBOX */}
-                          <p>
-                            Pretend everything is new and that you haven’t seen
-                            it before, and then you will be free to notice the
-                            leading lines, the places where one edge meets
-                            another in delightful geometric harmony, and how the
-                            ordinary things in the kitchen are transformed when
-                            the light is on or off.
-                          </p>
-                          <p>
-                            The trick here is to look slowly, and then look
-                            again. Take the time to look in detail and to look
-                            at the same thing from different angles, with
-                            different light, long lenses and wide lenses. Then
-                            move to the left a bit. You may never feel the need
-                            to leave the house again.
-                          </p>
+
+                          <div className="content">
+                            <h4 className="heading4 pt--10 pb--20">3. Thunk Middleware</h4>
+                            <p>For simple apps, the above approach seems fine. You don't need to worry about middleware if you're happy with it.</p>                            
+                            <p>In bigger apps, you may encounter some inconvenience around it.</p>
+                            <p>For example, it doesn't seem very nice when we have to propagate dispatch all over the place. This makes the <a href="https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0" data-wpel-link="external" rel="external noopener noreferrer">separate containers and component</a> become more complicated because any component that <code>dispatch</code> an asynchronous Redux action must receive <code>dispatch</code> as a prop. You can't bind actions to <code>connect()</code> anymore because <code>showNotificationWithTimeout()</code> is not really an action creator anymore. It does not return an object (<strong>Redux action</strong>).</p>
+                            <p>Also, it's not very nice to have to remember which functions are synchronous actions like <code>showNotification()</code> and which are asynchronous like <code>showNotificationWithTimeout()</code>. Since they are used differently, you must also be careful or you will lead to unnecessary errors.</p>
+                            <p>We need a way to show Redux that the asynchronous action creators are a special case of the action creator instead of as a completely different function.</p>
+                            <p>If you are still here with me and you are also aware of the problem inside your app, welcome to use <a href="https://github.com/reduxjs/redux-thunk" data- wpel-link="external" rel="external noopener noreferrer">Redux Thunk</a> middleware.</p>
+                            <p>In the gist, Redux Thunk "taught" Redux to recognize these special actions.</p>
+                            
+                            <SyntaxHighlighter language="jsx" style={dark} children={reduxThunkActionString}/>
+                            <p>When this middleware is enabled, if you dispatch a function, the Redux Thunk middleware will give that function a dispatch argument. Redux Thunk also helps your reducer to only accept plain object actions.</p>
+                            <p>Redux Thunk also allows us to declare <code>showNotificationWithTimeout()</code> as a regular Redux action creator.</p>
+
+                            <SyntaxHighlighter language="jsx" style={dark} children={actionCreatorString}/>
+                            <p> Note that the spelling is almost the same as the previous version. However, it does not accept <code> send </code> as the first argument. Instead, it returns a function as the <code> dispatch </code> argument. </p>
+                            <p>How do we use it in the component? Obviously, we could write like this:</p>
+                            
+                            <SyntaxHighlighter language="jsx" style={dark} children={componentString}/>
+                            <p>We are using as a <a href="https://xdevclass.com/phan-2-toan-tu-cau-lenh-dieu-kien-vong-lap-function-hof-arrow-function- call-apply-bind-in-javascript/#Currying" data-wpel-link="internal">currying function</a> and pass <code>dispatch</code> in.</p>
+                            <p>Looks like it's more "dumb" than the previous version.</p>
+                            <p>But like I said before.<strong> If Redux Thunk middleware is enabled, whenever you <code>dispatch</code> a function instead of an object, the middleware will call that function with <code> dispatch</code> is passed as the first argument.</strong></p>
+                            <p>So we can do it like this</p>
+                            <SyntaxHighlighter language="jsx" style={dark} children={loggerString}/>
+                            <p>Finally, <code>dispatch</code> an async action looks no different from a sync action. This is a good thing because the component doesn't care what happens inside the action, whether it's synchronous or asynchronous.</p>
+                            <p>If combined with <code>connect()</code>, the way we <code>dispatch</code> will be even more concise.</p>
+                            
+                            <SyntaxHighlighter language="jsx" style={dark} children={connectDispatchString}/>
+                          </div>
+
+                          <div className="content">
+                            <h4 className="heading4 pt--10 pb--20">4. Read state in Thunk</h4>
+                            <p>In case you want to get the current state of the Redux store, you can pass <code>getState</code> as the second argument to the function you return from the thunk action creator. This allows thunk to read the current state of the store.</p>
+                            <SyntaxHighlighter language="jsx" style={dark} children={getStateString}/>
+                          </div>
+
+                          <div className="content">
+                            <h4 className="heading4 pt--10 pb--20">5.Return in Thunk </h4>
+                            <p>Redux doesn't care what you return from thunk, but it will give you the value you return from thunk after <code>dispatch</code> is done. That's why you can return a Promise from thunk and wait for it until it succeeds by calling</p>
+                            <SyntaxHighlighter language="jsx" style={dark} children={promiseString}/>
+                          </div>
+
+                          <div className="content">
+                            <h4 className="heading4 pt--10 pb--20">6. In Summary</h4>
+                            <p>Don't use any middleware from Redux Thunk, Redux Saga if you really don't need them and understand what you're doing.</p>
+                            <p>If your app in the future is extensible and you want to get the benefits that thunk brings like solving the problem of passing <code>dispatch</code> everywhere in the component, then I recommend Use immediately and always be sure. It's very light anyway.</p>
+                            <p>Thanks for reading this far, see you next time</p>
+                          </div>
                         </div>
                         <div className="news_share">
                           <span>Share:</span>
@@ -486,300 +722,7 @@ const News = () => {
           </li>
           {/* END SINGLE BLOG */}
 
-          <li>
-            <div className="list_inner">
-              <div className="image" onClick={toggleModalThree}>
-                <img src="assets/img/thumbs/4-3.jpg" alt="thumb" />
-                <div
-                  className="main"
-                  style={{
-                    backgroundImage: "url(assets/img/news/3.jpg)",
-                  }}
-                ></div>
-              </div>
-              {/* END IMAGE */}
-
-              <div className="details">
-                <div className="extra">
-                  <p className="date">
-                    By <a href>Anh Ben</a>
-                    <span>15 Feb 2021</span>
-                  </p>
-                </div>
-
-                <h3 className="title" onClick={toggleModalThree}>
-                  Why every photographer should shoot film, even in 2021
-                </h3>
-                <div className="tokyo_tm_read_more">
-                  <a onClick={toggleModalThree} href>
-                    <span>Read More</span>
-                  </a>
-                </div>
-              </div>
-              {/* END DETAILS */}
-
-              {/* START MODAL */}
-              <Modal
-                isOpen={isOpen3}
-                onRequestClose={toggleModalThree}
-                contentLabel="My dialog"
-                className="mymodal"
-                overlayClassName="myoverlay"
-                closeTimeoutMS={500}
-              >
-                <div className="tokyo_tm_modalbox_news">
-                  <button className="close-modal" onClick={toggleModalThree}>
-                    <img src="assets/img/svg/cancel.svg" alt="close icon" />
-                  </button>
-                  <div className="box_inner">
-                    <div className="description_wrap scrollable">
-                      <div className="image">
-                        <img src="assets/img/thumbs/4-3.jpg" alt="thumb" />
-                        <div
-                          className="main"
-                          style={{
-                            backgroundImage: "url(assets/img/news/3.jpg)",
-                          }}
-                        ></div>
-                      </div>
-                      <div className="details">
-                        <div className="extra">
-                          <p className="date">
-                            By <a href>Anh Ben</a>
-                            <span>15 Feb 2021</span>
-                          </p>
-                        </div>
-                        <h3 className="title">
-                          Why every photographer should shoot film, even in 2021
-                        </h3>
-                      </div>
-                      <div className="main_content ">
-                        <div className="descriptions">
-                          <p className="bigger">
-                            Just because we can't get out and about like we
-                            normally would, doesn’t mean we have to stop taking
-                            pictures. There’s still plenty you can do, provided
-                            you're prepared to use some imagination. Here are a
-                            few ideas to keep you shooting until normal life
-                            resumes.
-                          </p>
-                          <p>
-                            Most photographers love to shoot the unusual, and
-                            you don’t get much more unusual than These
-                            Unprecedented Times. Right now everything counts as
-                            out of the ordinary. There are a number of
-                            remarkable things about these lockdown days that are
-                            worth photographing now so we can remember them when
-                            it is all over.
-                          </p>
-                          <p>
-                            Streets empty that are usually busy are remarkable
-                            and can evoke the sense of historical pictures from
-                            before the invention of the motorcar. Other things
-                            that are different at the moment will be queues to
-                            get into stores and the lines marked out on the
-                            floor to show how far apart we should be.
-                          </p>
-                          <div className="quotebox">
-                            <div className="icon">
-                              <img
-                                className="svg"
-                                src="assets/img/svg/quote.svg"
-                                alt="quore"
-                              />
-                            </div>
-                            <p>
-                              Most photographers find it hard to see interesting
-                              pictures in places in which they are most
-                              familiar. A trip somewhere new seems always
-                              exactly what our photography needed, as shooting
-                              away from home consistently inspires us to new
-                              artistic heights.
-                            </p>
-                          </div>
-                          {/* END QUOTEBOX */}
-                          <p>
-                            Pretend everything is new and that you haven’t seen
-                            it before, and then you will be free to notice the
-                            leading lines, the places where one edge meets
-                            another in delightful geometric harmony, and how the
-                            ordinary things in the kitchen are transformed when
-                            the light is on or off.
-                          </p>
-                          <p>
-                            The trick here is to look slowly, and then look
-                            again. Take the time to look in detail and to look
-                            at the same thing from different angles, with
-                            different light, long lenses and wide lenses. Then
-                            move to the left a bit. You may never feel the need
-                            to leave the house again.
-                          </p>
-                        </div>
-                        <div className="news_share">
-                          <span>Share:</span>
-                          <Social />
-                          {/* END SCCIAL SHARE */}
-                        </div>
-                      </div>
-                      {/* END MAIN CONTENT */}
-                    </div>
-                  </div>
-                </div>
-              </Modal>
-            </div>
-            {/* END LIST INNER */}
-          </li>
-          {/* END SINGLE BLOG */}
-
-          <li>
-            <div className="list_inner">
-              <div className="image" onClick={toggleModalFour}>
-                <img src="assets/img/thumbs/4-3.jpg" alt="thumb" />
-                <div
-                  className="main"
-                  style={{
-                    backgroundImage: "url(assets/img/news/4.jpg)",
-                  }}
-                ></div>
-              </div>
-              {/* END IMAGE */}
-
-              <div className="details">
-                <div className="extra">
-                  <p className="date">
-                    By <a href>Kevin Stone</a>
-                    <span>22 Jan 2021</span>
-                  </p>
-                </div>
-                {/* END EXTRA */}
-
-                <h3 className="title" onClick={toggleModalFour}>
-                  Stay creative in lockdown with these fun photo projects
-                </h3>
-                <div className="tokyo_tm_read_more">
-                  <a onClick={toggleModalFour} href>
-                    <span>Read More</span>
-                  </a>
-                </div>
-              </div>
-              {/* END DETAILS */}
-              <Modal
-                isOpen={isOpen4}
-                onRequestClose={toggleModalFour}
-                contentLabel="My dialog"
-                className="mymodal"
-                overlayClassName="myoverlay"
-                closeTimeoutMS={500}
-              >
-                <div className="tokyo_tm_modalbox_news">
-                  <button className="close-modal" onClick={toggleModalFour}>
-                    <img src="assets/img/svg/cancel.svg" alt="close icon" />
-                  </button>
-                  {/* END CLOSE ICON */}
-                  <div className="box_inner">
-                    <div className="description_wrap scrollable">
-                      <div className="image">
-                        <img src="assets/img/thumbs/4-3.jpg" alt="thumb" />
-                        <div
-                          className="main"
-                          style={{
-                            backgroundImage: "url(assets/img/news/4.jpg)",
-                          }}
-                        ></div>
-                      </div>
-                      {/* END IMAGE */}
-
-                      <div className="details">
-                        <div className="extra">
-                          <p className="date">
-                            By <a href="#toggleButton">Kevin Stone</a>
-                            <span>22 Jan 2021</span>
-                          </p>
-                        </div>
-                        <h3 className="title">
-                          Stay creative in lockdown with these fun photo
-                          projects
-                        </h3>
-                      </div>
-                      {/* END DETAILS */}
-
-                      <div className="main_content ">
-                        <div className="descriptions">
-                          <p className="bigger">
-                            Just because we can't get out and about like we
-                            normally would, doesn’t mean we have to stop taking
-                            pictures. There’s still plenty you can do, provided
-                            you're prepared to use some imagination. Here are a
-                            few ideas to keep you shooting until normal life
-                            resumes.
-                          </p>
-                          <p>
-                            Most photographers love to shoot the unusual, and
-                            you don’t get much more unusual than These
-                            Unprecedented Times. Right now everything counts as
-                            out of the ordinary. There are a number of
-                            remarkable things about these lockdown days that are
-                            worth photographing now so we can remember them when
-                            it is all over.
-                          </p>
-                          <p>
-                            Streets empty that are usually busy are remarkable
-                            and can evoke the sense of historical pictures from
-                            before the invention of the motorcar. Other things
-                            that are different at the moment will be queues to
-                            get into stores and the lines marked out on the
-                            floor to show how far apart we should be.
-                          </p>
-                          <div className="quotebox">
-                            <div className="icon">
-                              <img
-                                className="svg"
-                                src="assets/img/svg/quote.svg"
-                                alt="quote"
-                              />
-                            </div>
-                            <p>
-                              Most photographers find it hard to see interesting
-                              pictures in places in which they are most
-                              familiar. A trip somewhere new seems always
-                              exactly what our photography needed, as shooting
-                              away from home consistently inspires us to new
-                              artistic heights.
-                            </p>
-                          </div>
-                          {/* END QUOTEBOX */}
-                          <p>
-                            Pretend everything is new and that you haven’t seen
-                            it before, and then you will be free to notice the
-                            leading lines, the places where one edge meets
-                            another in delightful geometric harmony, and how the
-                            ordinary things in the kitchen are transformed when
-                            the light is on or off.
-                          </p>
-                          <p>
-                            The trick here is to look slowly, and then look
-                            again. Take the time to look in detail and to look
-                            at the same thing from different angles, with
-                            different light, long lenses and wide lenses. Then
-                            move to the left a bit. You may never feel the need
-                            to leave the house again.
-                          </p>
-                        </div>
-                        <div className="news_share">
-                          <span>Share:</span>
-                          <Social />
-                          {/* END SOCIAL SHARE */}
-                        </div>
-                      </div>
-                      {/* END MAIN CONTENT */}
-                    </div>
-                  </div>
-                </div>
-              </Modal>
-              {/* END MODAL */}
-            </div>
-            {/* END LIST INNER */}
-          </li>
+          
         </ul>
       </div>
     </>
